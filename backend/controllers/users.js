@@ -15,8 +15,11 @@ exports.signupUser = async (req, res) => {
   const surname = req.body.surname;
   const name = req.body.name;
 
+  console.log(JSON.stringify(req.body))
+
   if (!email || !surname || !name || !password) {
     console.log("c'est null")
+    console.log(req.body.email)
     return res.status(400).json({ 'error': 'NULL PARAMETER' });
   }
 
@@ -125,16 +128,12 @@ exports.getAllUsers = async (req, res, next) => {
 };
 
 exports.isLoggedIn = async (req, res, next) => {
-
-
-
   models.User.findOne({
     attributes: ['id'],
     where: { id: req.auth.users_idusers }
   })
     .then(user => { res.status(200).json(user) })
     .catch(error => res.status(400).json({ error: "ERROR" }))
-
 };
 
 exports.deleteUser = async (req, res, next) => {

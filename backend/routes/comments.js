@@ -8,5 +8,6 @@ router.get('/comments', auth, commentsCtrl.getAllComments);
 router.post('/comments/add', auth, commentsCtrl.addComment);
 router.post('/comments/update', auth, commentsCtrl.updateComment);
 router.delete('/comments/delete', auth, commentsCtrl.deleteComment);
+router.post('/comments/getcomments', auth, commentsCtrl.getComments);
 
 module.exports = router;
