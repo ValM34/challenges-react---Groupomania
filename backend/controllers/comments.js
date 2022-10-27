@@ -18,12 +18,14 @@ exports.addComment = async (req, res, next) => {
     users_idusers: req.auth.users_idusers,
     publications_idpublications: req.body.publications_idpublications,
     content: addContent,
-  });
-
-  return res.send({
-    success: true,
-    message: "COMMENT_ADDED",
-  });
+  })
+    .then(async (addComment) => {
+      const allComments = await models.sequelize.query("SELECT C.*, U.name, U.surname, U.id AS idUser, P.id AS idPublication FROM `comments` C JOIN users U JOIN publications P ON C.users_idusers = U.id AND P.id = C.publications_idpublications WHERE P.id = " + req.body.publications_idpublications + ";")
+    .then(comments => {
+      res.status(200).json({ message: 'COMMENT_ADDED', comments: comments[0]})
+    })
+    .catch(error => res.status(400).json({ error: "ERROR" }))
+    })
 };
 
 exports.updateComment = async (req, res, next) => {
@@ -39,8 +41,12 @@ exports.updateComment = async (req, res, next) => {
       { content: newComment },
       {
         where: { id: req.body.id }
-      });
-    return res.send("COMMENT_UPDATED");
+      })
+        .then(async() => {
+          console.log(req.body.content)
+          return;
+        })
+        .catch((err) => res.status(400).json({ error: 'ERROR' }))
   }
   const getOneComment = await models.Comment.findOne({
     where: { id: req.body.id, users_idusers: req.auth.users_idusers }

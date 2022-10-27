@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-export default function PublicationInput() {
+export default function PublicationInput({onPublish}) {
 
   const formRef = useRef();
 
@@ -19,6 +19,10 @@ export default function PublicationInput() {
     }
     console.log(formRef.current.value);
     fetch('http://localhost:3001/news/publications/add', options)
+      .then(res => res.json())
+      .then((res) => {
+        onPublish(res.publications)
+      })
   }
 
   

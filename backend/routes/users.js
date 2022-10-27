@@ -11,5 +11,7 @@ router.get('/all', auth, usersCtrl.getAllUsers); // Nom, prénom, id.
 router.get('/', auth, usersCtrl.isLoggedIn);
 router.delete('/delete', auth, usersCtrl.deleteUser);
 router.get('/isadmin', auth, usersCtrl.isAdmin);
+router.get('/current', auth, usersCtrl.current);
+router.post('/update', auth, usersCtrl.update);
 
 module.exports = router;

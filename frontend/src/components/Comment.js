@@ -1,15 +1,24 @@
 import dateConverter from '../helpers/dateConverter';
+import UpdateComment from './UpdateComment';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function Comment({ commentData }) {
 
-  let updatedAt = dateConverter(commentData.updatedAt);
+  const [updating, setUpdating] = useState(false);
+  const isAdmin = useSelector((state) => state.defineIsAdmin.value);
 
-  let token = JSON.parse(localStorage.getItem('userData')).token;
 
   const updateComment = (e) => {
     e.preventDefault();
-    // fetch('http://localhost:3001/news/comments/Update')
+    if (updating === false) {
+      setUpdating(true);
+    }
   }
+
+  let createdAt = dateConverter(commentData.createdAt);
+
+  let token = JSON.parse(localStorage.getItem('userData')).token;
 
   const deleteComment = (e) => {
     e.preventDefault();
@@ -28,18 +37,37 @@ export default function Comment({ commentData }) {
     fetch('http://localhost:3001/news/comments/delete', options)
   }
 
-  return (
-    <li className="bg-neutral-200 rounded-3xl my-4 p-3 w-fit">
-      <div className="flex justify-between">
-        <div>{commentData.name} {commentData.surname} {updatedAt}</div>
-        <div className="flex">
-          <button onClick={updateComment} className="mx-2">Modifier</button>
-          <button onClick={deleteComment} className="mx-2">Supprimer</button>
+  const idUser = JSON.parse(localStorage.getItem('userData')).userId;
+
+  
+
+  if (isAdmin) {
+    return (
+      <li className="bg-neutral-200 rounded-3xl my-4 p-3 w-fit">
+        <div className="flex justify-between">
+          <div>{commentData.name} {commentData.surname}</div>
+          <div className="flex">
+            <button onClick={updateComment} className="mx-2">Modifier</button>
+            <button onClick={deleteComment} className="mx-2">Supprimer</button>
+          </div>
         </div>
-      </div>
-      <div className="break-words">
-        {commentData.content}
-      </div>
-    </li>
-  )
+        {updating ? <UpdateComment commentData={commentData} /> : <div className="break-words">{commentData.content}</div>}
+        {createdAt}
+      </li>
+    )
+  } else {
+    return (
+      <li className="bg-neutral-200 rounded-3xl my-4 p-3 w-fit">
+        <div className="flex justify-between">
+          <div>{commentData.name} {commentData.surname}</div>
+          <div className="flex">
+            {idUser === commentData.idUser ? <button onClick={updateComment} className="mx-2">Modifier</button> : ""}
+            {idUser === commentData.idUser ? <button onClick={deleteComment} className="mx-2">Supprimer</button> : ""}
+          </div>
+        </div>
+        {updating ? <UpdateComment commentData={commentData} /> : <div className="break-words">{commentData.content}</div>}
+        {createdAt}
+      </li>
+    )
+  }
 }

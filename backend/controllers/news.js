@@ -29,13 +29,13 @@ exports.getAllPublications = async (req, res, next) => {
           publications.forEach(publication => publication.likes = [])
           // publications[0].likes.push(likes[0].publications_idpublications)
 
-          
-          
 
-          for (let i = 0; i < publications.length; i++){
-            for (let o = 0; o < likes.length; o++){
-              if(publications[i].id === likes[o].publications_idpublications){
-                publications[i].likes.push({likeId: likes[o].id, userId: likes[o].users_idusers})
+
+
+          for (let i = 0; i < publications.length; i++) {
+            for (let o = 0; o < likes.length; o++) {
+              if (publications[i].id === likes[o].publications_idpublications) {
+                publications[i].likes.push({ likeId: likes[o].id, userId: likes[o].users_idusers })
               }
             }
           }
@@ -67,12 +67,33 @@ exports.addPublication = async (req, res, next) => {
     users_idusers: req.auth.users_idusers,
     content: req.body.content,
     attachment: reqFile ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : ""
-  });
+  })
+  const publication = await models.sequelize.query("SELECT P.*, U.name, U.surname FROM `publications` P JOIN users U ON P.users_idusers = U.id ORDER BY P.createdAt DESC;")
+    .then(async publications => {
+      // res.status(200).json(publications)
 
-  return res.send({
-    success: true,
-    message: "PUBLICATION_ADDED",
-  });
+      publications = publications[0]
+
+      const likes = models.Like.findAll({ attributes: ['id', 'publications_idpublications', 'users_idusers'] })
+        .then(async (likes) => {
+
+          publications.forEach(publication => publication.likes = [])
+          // publications[0].likes.push(likes[0].publications_idpublications)
+
+
+
+
+          for (let i = 0; i < publications.length; i++) {
+            for (let o = 0; o < likes.length; o++) {
+              if (publications[i].id === likes[o].publications_idpublications) {
+                publications[i].likes.push({ likeId: likes[o].id, userId: likes[o].users_idusers })
+              }
+            }
+          }
+          return res.status(200).json({message: 'PUBLICATION_ADDED', publications: publications})
+        })
+    })
+    .catch(error => res.status(400).json({ error: "ERROR" }))
 };
 
 exports.updatePublication = async (req, res, next) => {

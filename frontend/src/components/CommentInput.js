@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-export default function CommentInput({publicationData}) {
+export default function CommentInput({publicationData, onAddComment}) {
 
   const token = JSON.parse(localStorage.getItem('userData')).token;
 
@@ -25,8 +25,12 @@ export default function CommentInput({publicationData}) {
       },
       body: JSON.stringify(body)
     }
-    console.log(body)
     fetch('http://localhost:3001/news/comments/add', options)
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res.comments)
+        onAddComment(res.comments)
+      })
   }
 
 

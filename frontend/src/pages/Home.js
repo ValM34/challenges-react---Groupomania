@@ -2,7 +2,7 @@ import Subscribe from '../components/Subscribe';
 import Connexion from '../components/Connexion';
 import { useState } from 'react';
 
-export default function Home() {
+export default function Home({onLogged}) {
 
   const [switchPage, setSwitchPage] = useState(false);
 
@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <div className="bg-blue-600 p-2 rounded-md w-full max-w-[650px]">
-      {switchPage ? <Connexion toggle={toggle} /> : <Subscribe toggle={toggle} />}
+      {switchPage ? <Connexion onLogged={onLogged} toggle={toggle} /> : <Subscribe toggle={toggle} />}
     </div>
   );
 }

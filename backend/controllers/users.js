@@ -23,7 +23,6 @@ exports.signupUser = async (req, res) => {
     return res.status(400).json({ 'error': 'NULL PARAMETER' });
   }
 
-
   if (!EMAIL_REGEX.test(email)) {
     return res.status(400).json({ 'error': 'EMAIL IS NOT VALID' });
   }
@@ -31,8 +30,6 @@ exports.signupUser = async (req, res) => {
   if (!PASSWORD_REGEX.test(password)) {
     return res.status(400).json({ 'error': 'PASSWORD IS NOT VALID' });
   }
-
-
 
   models.User.findOne({
     attributes: ['email'],
@@ -64,14 +61,7 @@ exports.signupUser = async (req, res) => {
     .catch(function (err) {
       return res.status(500).json({ 'error': 'ERROR' });
     });
-
-
-
-
-
-
 };
-
 
 exports.signinUser = async (req, res) => {
 
@@ -82,7 +72,6 @@ exports.signinUser = async (req, res) => {
   if (email == null || password == null) {
     return res.status(400).json({ 'error': 'MISSING PARAMETER' });
   }
-
 
   if (!EMAIL_REGEX.test(email)) {
     return res.status(400).json({ 'error': 'EMAIL IS NOT VALID' });
@@ -114,22 +103,17 @@ exports.signinUser = async (req, res) => {
     .catch(function (err) {
       return res.status(500).json({ 'error': 'UNABLE TO VERIFY USER' });
     });
-
-
 }
 
 exports.getAllUsers = async (req, res, next) => {
-
   const allUsers = await models.User.findAll({ attributes: ['id', 'name', 'surname'] })
-      .then(users => { res.status(200).json(users) })
-      .catch(error => res.status(400).json({ error: "ERROR" }))
-
-
+    .then(users => { res.status(200).json(users) })
+    .catch(error => res.status(400).json({ error: "ERROR" }))
 };
 
 exports.isLoggedIn = async (req, res, next) => {
   models.User.findOne({
-    attributes: ['id'],
+    attributes: ['id', 'isAdmin'],
     where: { id: req.auth.users_idusers }
   })
     .then(user => { res.status(200).json(user) })
@@ -140,16 +124,16 @@ exports.deleteUser = async (req, res, next) => {
 
   const user = req.auth.users_idusers;
   if (!user) {
-      return res.send(" ERROR ");
+    return res.send(" ERROR ");
   }
   const verifyUser = await models.User.findOne({
-      where: { id: req.auth.users_idusers }
+    where: { id: req.auth.users_idusers }
   })
   if (verifyUser) {
-      const deleteUser = await models.User.destroy({
-          where: { id: req.auth.users_idusers }
-      });
-      return res.send("USER_DELETED");
+    const deleteUser = await models.User.destroy({
+      where: { id: req.auth.users_idusers }
+    });
+    return res.send("USER_DELETED");
   } else {
     return res.send(" ERROR ");
   }
@@ -158,10 +142,78 @@ exports.deleteUser = async (req, res, next) => {
 exports.isAdmin = async (req, res, next) => {
 
   const allUsers = await models.User.findOne({
-    attributes: ['id','isAdmin'],
-    where: { id: req.auth.users_idusers }})
-      .then(users => { res.status(200).json(users) })
-      .catch(error => res.status(400).json({ error: "ERROR" }))
-
-
+    attributes: ['id', 'isAdmin'],
+    where: { id: req.auth.users_idusers }
+  })
+    .then(users => { res.status(200).json(users) })
+    .catch(error => res.status(400).json({ error: "ERROR" }))
 };
+
+exports.current = async (req, res, next) => {
+  const user = await models.User.findOne({
+    attributes: ['id', 'isAdmin', 'email', 'surname', 'name'],
+    where: { id: req.auth.users_idusers }
+  })
+    .then(users => { res.status(200).json(users) })
+    .catch(error => res.status(400).json({ error: "ERROR" }))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.update = async (req, res, next) => {
+
+  const updateUser = {};
+
+  if (req.body.name !== '' || req.body.name === undefined || null) { updateUser.name = req.body.name; }
+  if (req.body.surname !== '' || req.body.surname === undefined || null) { updateUser.surname = req.body.surname; }
+  if (req.body.email !== '' || req.body.email === undefined || null) { updateUser.email = req.body.email; }
+
+  const user = await models.User.update(
+    updateUser,
+    {
+      where: { id: req.auth.users_idusers }
+    })
+    .then(async (user) => { res.status(200).json({ message: 'USER_UPDATED' }) })
+    .catch((err) => res.status(400).json({ error: 'ERROR' }))
+}

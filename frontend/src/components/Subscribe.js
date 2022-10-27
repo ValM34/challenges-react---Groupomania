@@ -18,7 +18,6 @@ export default function Subscribe({toggle}) {
       password: password
     }
 
-    const token = JSON.parse(localStorage.getItem('userData'))[0].token;
     fetch(formRef.current.action, {
       method: formRef.current.method,
       body: JSON.stringify(userInfos),

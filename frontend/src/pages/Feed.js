@@ -1,4 +1,4 @@
-import { useState, useEffect, Component } from 'react';
+import { useState } from 'react';
 import Publication from '../components/Publication';
 import PublicationInput from '../components/PublicationInput';
 
@@ -22,11 +22,18 @@ export default function Feed() {
       })
   }
 
+  const onPublish = (newData) => setData(newData)
+  const onDelete = (idPublication) => {
+    // Je cherche où il est dans le tableau, je le supprime
+    let filtered = data.filter((data) => data.id !== idPublication)
+    setData(filtered)
+  }
+
   return (
     <div>
-      <PublicationInput />
+      <PublicationInput onPublish={onPublish} />
       <ol>
-        {data ? data.map((data) => <Publication key={data.id} publicationData={data} />) : "Il n'y a actuellement aucune publication"}
+        {data ? data.map((data) => <Publication key={data.id} publicationData={data} onDelete={onDelete} />) : "Il n'y a actuellement aucune publication"}
       </ol>
     </div>
   );

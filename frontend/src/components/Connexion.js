@@ -1,6 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
-export default function Connexion({toggle}) {
+export default function Connexion({toggle, onLogged}) {
+
+  const [error, setError] = useState(false);
 
   const formRef = useRef();
   
@@ -21,12 +23,17 @@ export default function Connexion({toggle}) {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log(response)
         localStorage.setItem("userData", JSON.stringify(response))
         const token = JSON.parse(localStorage.getItem('userData')).token;
-        console.log(token)
+        if(response.error) {
+          setError(true);
+          return;
+        }
+        onLogged();
       })
   }
+
+  
 
   return (
     <section className="">
@@ -42,6 +49,7 @@ export default function Connexion({toggle}) {
             <button type="submit" className="px-10 text-white font-semibold py-2 bg-orange-400 mt-2 w-fit rounded-full shadow-md shadow-blue-700">Valider</button>
           </div>
         </form>
+        {error ? <div className="bg-red-600 text-center mt-2 font-semibold text-white">La connexion a échoué</div> : ""}
       </div>
     </section>
   );
