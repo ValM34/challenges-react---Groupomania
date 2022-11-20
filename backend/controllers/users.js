@@ -20,15 +20,15 @@ exports.signupUser = async (req, res) => {
   if (!email || !surname || !name || !password) {
     console.log("c'est null")
     console.log(req.body.email)
-    return res.status(400).json({ 'error': 'NULL PARAMETER' });
+    return res.status(400).json({ message: 'NULL PARAMETER' });
   }
 
   if (!EMAIL_REGEX.test(email)) {
-    return res.status(400).json({ 'error': 'EMAIL IS NOT VALID' });
+    return res.status(400).json({ message: 'EMAIL IS NOT VALID' });
   }
 
   if (!PASSWORD_REGEX.test(password)) {
-    return res.status(400).json({ 'error': 'PASSWORD IS NOT VALID' });
+    return res.status(400).json({ message: 'PASSWORD IS NOT VALID' });
   }
 
   models.User.findOne({
