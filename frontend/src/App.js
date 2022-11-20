@@ -4,7 +4,7 @@ import Feed from './pages/Feed';
 import Header from './layouts/Header';
 import Profil from './pages/Profil';
 import Rendu from './components/Rendu';
-import Test2 from './pages/Test2';
+import Spinner from './components/spinner/Spinner';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -13,40 +13,16 @@ import useFetch from './customHooks/useFetch';
 
 function App() {
   const dispatch = useDispatch()
-
   const [isLogged, setIsLogged] = useState(false);
-  // const token = JSON.parse(localStorage.getItem('userData'))?.token ?? null;
-
-  /*useEffect(() => {
-    const options = {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-      }
-    }
-    if (token !== null && isLogged === false) {
-      fetch('http://localhost:3001/users', options)
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.id) {
-            setIsLogged(true);
-          }
-          if (response.isAdmin) {
-            dispatch(config(response.isAdmin))
-          }
-        })
-    }
-  }, [dispatch, isLogged, token])*/
-
   const { data, loading, error } = useFetch('http://localhost:3001/users');
   useEffect(() => {
     dispatch(config(data?.isAdmin))
   })
-  
   const onLogged = () => setIsLogged(true);
   const onLogout = () => setIsLogged(false);
 
+  if(loading) return <Spinner size={"text-4xl"} />
+  if(error) return console.log(error);
   if (data?.isAdmin === true) {
     return (
       <div className="flex flex-col items-center bg-neutral-100">
@@ -58,7 +34,6 @@ function App() {
               <Route path="/" element={<Feed />} />
               <Route path="/rendu" element={<Rendu />} />
               <Route path="/about" element={<About />} />
-              <Route path="/test2" element={<Test2 />} />
             </Routes>
           </div>
         </BrowserRouter>

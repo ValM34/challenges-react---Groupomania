@@ -3,7 +3,6 @@ import Connexion from '../components/user/Connexion';
 import { useState } from 'react';
 
 export default function Home({onLogged}) {
-
   const [switchPage, setSwitchPage] = useState(false);
 
   function toggle () {

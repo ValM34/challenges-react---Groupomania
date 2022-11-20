@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from 'react-redux';
+import { config } from '../features/counter/publications';
 
 export default function useFetch(url, body = null) {
   const [data, setData] = useState(null);
@@ -40,6 +42,9 @@ export default function useFetch(url, body = null) {
           setError(err);
         });
   }, [url]);
+
+  const dispatch = useDispatch();
+  //dispatch(config(data))
 
   return { data, loading, error };
 }

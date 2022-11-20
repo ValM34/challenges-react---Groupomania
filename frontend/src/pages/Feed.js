@@ -2,54 +2,49 @@ import { useEffect, useState } from 'react';
 import Publication from '../components/publication/Publication';
 import PublicationInput from '../components/publication/PublicationInput';
 import useFetch from '../customHooks/useFetch';
+import Spinner from '../components/spinner/Spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { config } from '../features/counter/publications';
 
 export default function Feed() {
 
-  console.log('étape 1')
-
-  // const [data, setData] = useState(null);
-
-  const token = JSON.parse(localStorage.getItem('userData')).token;
+  const [dataIsProvided, setDataIsProvided] = useState(false);
   
-  /*useEffect(() => {
-    console.log('useEffect')
-    const options = {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
+  const { data, error, loading } = useFetch('http://localhost:3001/news');
+  const dispatch = useDispatch()
+  useEffect(() => {
+    // Je suis obligé de faire ces vérifications pour éviter de re-dispatch l'ancien état au rechargement du composant
+    if(dataIsProvided === false){
+      dispatch(config(data))
+      if(data !== null){
+        setDataIsProvided(true)
       }
     }
-    if (data === null) {
-      fetch('http://localhost:3001/news', options)
-        .then((response) => response.json())
-        .then((response) => {
-          setData(response)
-        })
-    }
-  }, [data])*/
+    
+  }, [data, dataIsProvided, dispatch])
+  const globalState = useSelector((state) => (state));
+  const publications = globalState.definePublications.value;
+  console.log(globalState.definePublications.value)
 
-  const { data, error, loading } = useFetch('http://localhost:3001/news');
-  
-  console.log('étape 2')
-  /*const onPublish = (newData) => setData(newData)
+  const onPublish = (newData) => {
+    dispatch(config(newData))
+  }
   const onDelete = (idPublication) => {
     // Je cherche où il est dans le tableau, je le supprime
-    let filtered = data.filter((data) => data.id !== idPublication)
-    setData(filtered)
-  }*/
-  console.log('étape 3')
+    let filtered = publications.filter((data) => data.id !== idPublication)
+    console.log(filtered)
+    dispatch(config(filtered))
+  }
 
-  if(loading) return <h1>LOADING...</h1>
+  if(loading) return <Spinner />
 
   if(error) console.log(error);
 
-  console.log(data)
   return (
     <div>
-      <PublicationInput /*onPublish={onPublish}*/ />
+      <PublicationInput onPublish={onPublish} />
       <ol>
-        {data ? data.map((data) => <Publication key={data.id} publicationData={data} /*onDelete={onDelete}*/ />) : "Il n'y a actuellement aucune publication"}
+        {publications ? publications.map((data) => <Publication key={data.id} publicationData={data} onDelete={onDelete} />) : "Il n'y a actuellement aucune publication"}
       </ol>
     </div>
   );
