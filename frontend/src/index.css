@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-.break-words{
+.break-words {
   overflow-wrap: anywhere;
+}
+
+@keyframes slidein {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+.error-message {
+  background-color: red;
+  color: white;
+  padding: 2px 5px;
+  animation: slidein 0.3s;
+  transform-origin: left;
+  margin: 10px 0;
+}
+
+.succes-message {
+  background-color: green;
+  color: white;
+  padding: 2px 5px;
+  animation: slidein 0.3s;
+  transform-origin: left;
+  margin: 10px 0;
 }

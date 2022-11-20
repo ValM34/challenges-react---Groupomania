@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
+import ValidationMessage from '../ValidationMessage';
 
-export default function Connexion({toggle, onLogged}) {
+export default function Connexion({ toggle, onLogged }) {
 
-  const [error, setError] = useState(false);
+  const [validation, setValidation] = useState(null);
 
   const formRef = useRef();
-  
+
   const callToAPI = (e) => {
     e.preventDefault(e)
     const email = formRef.current[0].value
@@ -16,24 +17,30 @@ export default function Connexion({toggle, onLogged}) {
       password: password
     }
 
+    let test = false;
+    const succesMessage = 'Connexion validée, connexion en cours...';
+    const errorMessage = 'Votre inscription a échoué.';
+
+
     fetch(formRef.current.action, {
       method: formRef.current.method,
       body: JSON.stringify(userInfos),
       headers: { "Content-Type": "application/json" }
     })
-      .then((response) => response.json())
       .then((response) => {
-        localStorage.setItem("userData", JSON.stringify(response))
-        const token = JSON.parse(localStorage.getItem('userData')).token;
-        if(response.error) {
-          setError(true);
-          return;
+        test = response.ok;
+        return response.json();
+      })
+      .then((response) => {
+        setValidation({ ok: test, message: test ? succesMessage : errorMessage });
+        if (test === true) {
+          localStorage.setItem("userData", JSON.stringify(response))
+          onLogged();
         }
-        onLogged();
       })
   }
 
-  
+
 
   return (
     <section className="">
@@ -49,7 +56,7 @@ export default function Connexion({toggle, onLogged}) {
             <button type="submit" className="px-10 text-white font-semibold py-2 bg-orange-400 mt-2 w-fit rounded-full shadow-md shadow-blue-700">Valider</button>
           </div>
         </form>
-        {error ? <div className="bg-red-600 text-center mt-2 font-semibold text-white">La connexion a échoué</div> : ""}
+        {validation !== null ? <ValidationMessage validation={validation} /> : ''}
       </div>
     </section>
   );

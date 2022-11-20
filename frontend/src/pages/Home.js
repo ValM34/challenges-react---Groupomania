@@ -1,5 +1,5 @@
-import Subscribe from '../components/Subscribe';
-import Connexion from '../components/Connexion';
+import Subscribe from '../components/user/Subscribe';
+import Connexion from '../components/user/Connexion';
 import { useState } from 'react';
 
 export default function Home({onLogged}) {

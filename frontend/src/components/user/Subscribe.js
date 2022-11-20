@@ -1,9 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import ValidationMessage from '../ValidationMessage';
 
-export default function Subscribe({toggle}) {
+export default function Subscribe({ toggle }) {
 
   const formRef = useRef();
-  
+
+  const [validation, setValidation] = useState(null);
+
   const callToAPI = (e) => {
     e.preventDefault(e)
     const name = formRef.current[0].value
@@ -23,12 +26,14 @@ export default function Subscribe({toggle}) {
       body: JSON.stringify(userInfos),
       headers: { "Content-Type": "application/json" }
     })
-      .then((response) => response.json())
       .then((response) => {
-        console.log(response)
+        const succesMessage = 'Votre inscription est validée, vous pouvez maintenant vous connecter.';
+        const errorMessage = 'Votre inscription a échoué.';
+        setValidation({ok: response.ok, message: response.ok ? succesMessage : errorMessage});
+        return;
       })
   }
-
+  
   return (
     <section className="">
       <div className="">
@@ -44,6 +49,7 @@ export default function Subscribe({toggle}) {
           <div className="flex justify-center">
             <button type="submit" className="px-10 text-white font-semibold py-2 bg-orange-400 mt-2 w-fit rounded-full shadow-md shadow-blue-700">Valider</button>
           </div>
+          {validation !== null ? <ValidationMessage validation={validation} /> : ''}
         </form>
       </div>
     </section>
