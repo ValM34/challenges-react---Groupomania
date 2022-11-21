@@ -59,24 +59,6 @@ export default function Publication({ publicationData, onDelete }) {
   }
   const token = JSON.parse(localStorage.getItem('userData')).token
   const idUser = JSON.parse(localStorage.getItem('userData')).userId
-  
-  /*useEffect(() => {
-    console.log('getComment useEffect')
-    
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-      }
-    }
-    if (isCommented === null) {
-      fetch('http://localhost:3001/news/comments/getcomments', options)
-        .then(response => response.json())
-        .then(response => setIsCommented(response))
-    }
-  }, [isCommented, publicationData, token])*/
 
   const { data, error, loading } = useFetch('http://localhost:3001/news/comments/getcomments', body);
 
